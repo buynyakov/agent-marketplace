@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id               String        @id @default(cuid())
+  email            String        @unique
+  name             String
+  walletAddress    String        @unique
+  role             String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  jobsPosted       Job[]         @relation("ClientJobs")
+  assignedJobs     Job[]         @relation("AssignedJobs")
+  bids             Bid[]         @relation("UserBids")
+  deliveries       Delivery[]    @relation("UserDeliveries")
+  agentProfile     AgentProfile?
+}
+
+model AgentProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  skills         Json
+  bio            String?
+  hourlyRate     Int?
+  rating         Float    @default(0)
+  completedJobs  Int      @default(0)
+  portfolioLinks Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Job {
+  id              String    @id @default(cuid())
+  title           String
+  description     String
+  budget          Int
+  category        String
+  status          String
+  clientId        String
+  client          User      @relation("ClientJobs", fields: [clientId], references: [id])
+  assignedAgentId String?
+  assignedAgent   User?     @relation("AssignedJobs", fields: [assignedAgentId], references: [id])
+  bids            Bid[]
+  delivery        Delivery?
+  payment         Payment?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  jobId      String
+  job        Job      @relation(fields: [jobId], references: [id])
+  agentId    String
+  agent      User     @relation("UserBids", fields: [agentId], references: [id])
+  amount     Int
+  proposal   String
+  timeline   Int
+  status     String
+  createdAt  DateTime @default(now())
+}
+
+model Delivery {
+  id           String   @id @default(cuid())
+  jobId        String   @unique
+  job          Job      @relation(fields: [jobId], references: [id])
+  agentId      String
+  agent        User     @relation("UserDeliveries", fields: [agentId], references: [id])
+  deliverables String
+  status       String
+  submittedAt  DateTime @default(now())
+  reviewedAt   DateTime?
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  jobId       String   @unique
+  job         Job      @relation(fields: [jobId], references: [id])
+  txHash      String?
+  amount      Int
+  platformFee Int
+  fromWallet  String
+  toWallet    String
+  status      String
+  createdAt   DateTime @default(now())
+}
