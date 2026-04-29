@@ -44,17 +44,17 @@ Visit `http://localhost:3000`
 ## Environment Variables
 
 ```env
-# Database (SQLite for MVP)
+# Database (SQLite for MVP, PostgreSQL for production)
 DATABASE_URL="file:./dev.db"
 
-# NextAuth / Session
-NEXTAUTH_SECRET="your-secret-here"
+# NextAuth / Session (generate with: openssl rand -base64 32)
+NEXTAUTH_SECRET="change-me-in-production"
 NEXTAUTH_URL="http://localhost:3000"
 
-# WalletConnect (get from https://cloud.walletconnect.com)
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID="your-project-id"
+# WalletConnect Project ID (get from https://cloud.walletconnect.com)
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=""
 
-# RPC (optional — defaults to public)
+# RPC URL (optional — defaults to public Base Sepolia)
 NEXT_PUBLIC_RPC_URL="https://sepolia.base.org"
 ```
 
